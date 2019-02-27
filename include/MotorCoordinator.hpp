@@ -40,7 +40,7 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
         {
           long unsigned int separationY = abs(dxyz/((double)feed*dy));
           if(dy > 0)
-            Y.linearBackward(dy, separationY, starttime);
+            Y.linearBackward(dy, separationY, starttime);//change in direction
           else if (dy < 0)
             Y.linearForward(-dy, separationY, starttime);
         }
@@ -68,10 +68,10 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
   }
   void archR(long int x, long int y, long int z, long int centerRelativeX, long int centerRelativeY, unsigned int feed)
   {//Z is linear!
-    double radius = sqrt((currentX-centerRelativeX)*(currentX-centerRelativeX)+(currentY-centerRelativeY)*(currentY-centerRelativeY));
-    double radius2 = sqrt((x-centerRelativeX)*(x-centerRelativeX)+(y-centerRelativeY)*(y-centerRelativeY));
-    long unsigned int absoluteCenterX = currentX+centerRelativeX;
-    long unsigned int absoluteCenterY = currentY+centerRelativeY;
+    long int absoluteCenterX = currentX+centerRelativeX;
+    long int absoluteCenterY = currentY+centerRelativeY;
+    double radius = sqrt((currentX-absoluteCenterX)*(currentX-absoluteCenterX)+(currentY-absoluteCenterY)*(currentY-absoluteCenterY));
+    double radius2 = sqrt((x-absoluteCenterX)*(x-absoluteCenterX)+(y-absoluteCenterY)*(y-absoluteCenterY));
     if (abs(radius - radius2) > 2)
     {
       Serial.print("Variable radius arcs are not supporrted yet.");
@@ -80,11 +80,11 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
 //przejscie do ukladu biegunowego
     double fi1 = getFi(-centerRelativeX,-centerRelativeY);
     double fi2 = getFi(x-currentX-centerRelativeX,y-currentY-centerRelativeY);
-    if (fi2 > fi1)//tak co by łuk zawszae byl w prawo przy odejmowaniu
+    if (fi2 >= fi1)
       fi1 +=2*M_PI;
     double arcAngle = fi1-fi2;
     double arclength = arcAngle*radius;
-    unsigned int sections = arclength/20;//20 steps = ~0,1mm
+    unsigned int sections = arclength/20;//20 steps = ~0,016mm
     double sectionAngle = arcAngle/sections;
     double dz = z-currentZ;
     long unsigned int startZ = currentZ;
@@ -97,10 +97,10 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
   }
   void archL(long int x, long int y, long int z, long int centerRelativeX, long int centerRelativeY, unsigned int feed)
   {//Z is linear!
-    double radius = sqrt((currentX-centerRelativeX)*(currentX-centerRelativeX)+(currentY-centerRelativeY)*(currentY-centerRelativeY));
-    double radius2 = sqrt((x-centerRelativeX)*(x-centerRelativeX)+(y-centerRelativeY)*(y-centerRelativeY));
-    long unsigned int absoluteCenterX = currentX+centerRelativeX;
-    long unsigned int absoluteCenterY = currentY+centerRelativeY;
+    long int absoluteCenterX = currentX+centerRelativeX;
+    long int absoluteCenterY = currentY+centerRelativeY;
+    double radius = sqrt((currentX-absoluteCenterX)*(currentX-absoluteCenterX)+(currentY-absoluteCenterY)*(currentY-absoluteCenterY));
+    double radius2 = sqrt((x-absoluteCenterX)*(x-absoluteCenterX)+(y-absoluteCenterY)*(y-absoluteCenterY));
     if (abs(radius - radius2) > 2)
     {
       Serial.print("Variable radius arcs are not supporrted yet.");
@@ -109,7 +109,7 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
 //przejscie do ukladu biegunowego
     double fi1 = getFi(-centerRelativeX,-centerRelativeY);
     double fi2 = getFi(x-currentX-centerRelativeX,y-currentY-centerRelativeY);
-    if (fi2 < fi1)//tak co by łuk zawszae byl w prawo przy odejmowaniu
+    if (fi2 <= fi1) //<= so we can do a full circle at one command
       fi2 +=2*M_PI;
     double arcAngle = fi2-fi1;
     double arclength = arcAngle*radius;
