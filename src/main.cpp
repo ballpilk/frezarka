@@ -31,11 +31,5 @@ void loop() {
     digitalWrite(13, ++count%2==0?HIGH:LOW);
     tim+=1000;
   }
-
-  long unsigned int microsecond = micros();
-  X1.onTime(microsecond);
-  X2.onTime(microsecond);
-  Y.onTime(microsecond);
-  Z.onTime(microsecond);
   manual.check();
 }

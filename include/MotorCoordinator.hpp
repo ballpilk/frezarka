@@ -2,6 +2,7 @@
 
 #include "MotorDriver.hpp"
 #include <math.h>
+const double microsInSec = 1000000;
 class MotorCoordinator
 {
 public:
@@ -13,55 +14,63 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
   {
       if(feed==0)
         return;
-      long int dx = x-currentX;
-      long int dy = y-currentY;
-      long int dz = z-currentZ;
-
-      double dxyz = sqrt(double(dx*dx+dy*dy+dz*dz));
-      unsigned long int starttime = micros();
-
+      double dx = x-currentX;
+      double dy = y-currentY;
+      double dz = z-currentZ;
+      double dxyz = sqrt(dx*dx+dy*dy+dz*dz);
+      double roundsPerSecTimesDistance = microsInSec*dxyz/feed;
+      Serial.println(roundsPerSecTimesDistance);
+      unsigned int separationX = 0;
+      unsigned int separationY = 0;
+      unsigned int separationZ = 0;
       if(dxyz != 0)
       {
         if(dx != 0)
         {
-          long unsigned int separationX = abs(dxyz/((double)feed*dx));
-          if (dx > 0)
-          {
-            X1.linearForward(dx, separationX, starttime);
-            X2.linearForward(dx, separationX, starttime);
-          }
-          else if (dx < 0)
-          {
-            X1.linearBackward(-dx, separationX, starttime);
-            X2.linearBackward(-dx, separationX, starttime);
-          }
+          separationX = abs(roundsPerSecTimesDistance/dx);
         }
         if(dy != 0)
         {
-          long unsigned int separationY = abs(dxyz/((double)feed*dy));
-          if(dy > 0)
-            Y.linearBackward(dy, separationY, starttime);//change in direction
-          else if (dy < 0)
-            Y.linearForward(-dy, separationY, starttime);
+          separationY = abs(roundsPerSecTimesDistance/dy);
         }
         if(dz != 0)
         {
-          long unsigned int separationZ = abs(dxyz/((double)feed*dz));
-          if(dz > 0)
-            Z.linearForward(dz, separationZ, starttime);
-          else if (dz < 0)
-            Z.linearBackward(-dz, separationZ, starttime);
+          separationZ = abs(roundsPerSecTimesDistance/dz);
         }
+        Serial.println(separationX);
+        Serial.println(separationY);
+        Serial.println(separationZ);
       }
-      bool finished = false;
-      while(!finished)
+      else
       {
-        long unsigned int micro = micros();
-        finished = X1.onTime(micro);
-        finished = X2.onTime(micro) && finished;
-        finished = Y.onTime(micro) && finished;
-        finished = Z.onTime(micro) && finished;
+        Serial.println("No Move");
+        return;
       }
+      unsigned long int starttime = micros();
+      if (dx > 0)
+      {
+        X1.linearForward(dx, separationX, starttime);
+        X2.linearForward(dx, separationX, starttime);
+      }
+      else
+      {
+        X1.linearBackward(-dx, separationX, starttime);
+        X2.linearBackward(-dx, separationX, starttime);
+      }
+      if(dy > 0)
+        Y.linearBackward(dy, separationY, starttime);//change in direction
+      else
+        Y.linearForward(-dy, separationY, starttime);
+      if(dz > 0)
+        Z.linearForward(dz, separationZ, starttime);
+      else
+        Z.linearBackward(-dz, separationZ, starttime);
+
+      go();
+//      Serial.println(X1.getMaxErr());
+//      Serial.println(X2.getMaxErr());
+//      Serial.println(Y.getMaxErr());
+//      Serial.println(Z.getMaxErr());
       currentX = x;
       currentY = y;
       currentZ = z;
@@ -89,6 +98,7 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
     }
     line(x, y, z, feed);//just in case to finish off mitigating all numerical errors
   }
+
   void archL(long int x, long int y, long int z, long int centerRelativeX, long int centerRelativeY, unsigned int feed)
   {//Z is linear!
     long int absoluteCenterX = currentX+centerRelativeX;
@@ -115,6 +125,18 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
 
 
 private:
+  void go()
+  {
+    bool finished = false;
+    while(!finished)
+    {
+      long unsigned int micro = micros();
+      finished = X1.onTime(micro);
+      finished = X2.onTime(micro) && finished;
+      finished = Y.onTime(micro) && finished;
+      finished = Z.onTime(micro) && finished;
+    }
+  }
   long int getx(double radius, double fi)
   {
     return radius*cos(fi);

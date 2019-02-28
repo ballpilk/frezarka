@@ -33,7 +33,10 @@ public:
     {
         case 1: //line
         {
-          coordinator.line(getNumber('X')*stepsPerMM, getNumber('Y')*stepsPerMM, getNumber('Z')*stepsPerMM, getNumber('F')*stepsPerMM);
+          coordinator.line(getNumber('X')*stepsPerMM,
+                           getNumber('Y')*stepsPerMM,
+                           getNumber('Z')*stepsPerMM,
+                           getNumber('F')*stepsPerMM/20.);
           break;
         }
         case 3: //arc right
@@ -43,7 +46,7 @@ public:
                           getNumber('Z')*stepsPerMM,
                           getNumber('I')*stepsPerMM,
                           getNumber('J')*stepsPerMM,
-                          getNumber('F')*stepsPerMM/10);
+                          getNumber('F')*stepsPerMM/20.);
           break;
         }
         case 4: //arc left
@@ -53,7 +56,7 @@ public:
                           getNumber('Z')*stepsPerMM,
                           getNumber('I')*stepsPerMM,
                           getNumber('J')*stepsPerMM,
-                          getNumber('F')*stepsPerMM/10);
+                          getNumber('F')*stepsPerMM/20.);
           break;
         }
     }
@@ -64,6 +67,7 @@ public:
     Serial.write(letter);
     if(letter == '\n' or letter == '\r')
     {
+      Serial.write("\n");
       buff.append('\0');
       processCommand(buff);
       buff.reset();

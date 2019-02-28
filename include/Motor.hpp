@@ -9,13 +9,16 @@ public:
     pinMode(pin, OUTPUT);
     pinMode(dir, OUTPUT);
   }
-  void step(int direction)
+  void setDir(int direction)
   {
     digitalWrite(dir, direction);
+  }
+  void step()
+  {
     digitalWrite(pin, pinStates[++count%2]);
   }
 private:
-  long int count = 0;
+  unsigned int count = 0;
   int pinStates[2] = {HIGH, LOW};
   int pin = 0;
   int dir = 0;
