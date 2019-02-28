@@ -70,21 +70,15 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
   {//Z is linear!
     long int absoluteCenterX = currentX+centerRelativeX;
     long int absoluteCenterY = currentY+centerRelativeY;
-    double radius = sqrt((currentX-absoluteCenterX)*(currentX-absoluteCenterX)+(currentY-absoluteCenterY)*(currentY-absoluteCenterY));
-    double radius2 = sqrt((x-absoluteCenterX)*(x-absoluteCenterX)+(y-absoluteCenterY)*(y-absoluteCenterY));
-    if (abs(radius - radius2) > 2)
-    {
-      Serial.print("Variable radius arcs are not supporrted yet.");
-      return;
-    }
+    double radius = sqrt(double(centerRelativeX)*double(centerRelativeX)+double(centerRelativeY)*double(centerRelativeY));//converted to double because of overflow problem on large arches
 //przejscie do ukladu biegunowego
-    double fi1 = getFi(-centerRelativeX,-centerRelativeY);
-    double fi2 = getFi(x-currentX-centerRelativeX,y-currentY-centerRelativeY);
+    double fi1 = getFi(-centerRelativeX, -centerRelativeY);
+    double fi2 = getFi(x-currentX-centerRelativeX, y-currentY-centerRelativeY);
     if (fi2 >= fi1)
-      fi1 +=2*M_PI;
+      fi1 += 2*M_PI;
     double arcAngle = fi1-fi2;
     double arclength = arcAngle*radius;
-    unsigned int sections = abs(arclength/20);//20 steps = ~0,016mm
+    unsigned int sections = abs(arclength/20.);//20 steps = ~0,016mm
     double sectionAngle = arcAngle/sections;
     double dz = z-currentZ;
     long unsigned int startZ = currentZ;
@@ -99,13 +93,7 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
   {//Z is linear!
     long int absoluteCenterX = currentX+centerRelativeX;
     long int absoluteCenterY = currentY+centerRelativeY;
-    double radius = sqrt((currentX-absoluteCenterX)*(currentX-absoluteCenterX)+(currentY-absoluteCenterY)*(currentY-absoluteCenterY));
-    double radius2 = sqrt((x-absoluteCenterX)*(x-absoluteCenterX)+(y-absoluteCenterY)*(y-absoluteCenterY));
-    if (abs(radius - radius2) > 2)
-    {
-      Serial.print("Variable radius arcs are not supporrted yet.");
-      return;
-    }
+    double radius = sqrt(double(centerRelativeX)*double(centerRelativeX)+double(centerRelativeY)*double(centerRelativeY));//converted to double because of overflow problem on large arches
 //przejscie do ukladu biegunowego
     double fi1 = getFi(-centerRelativeX,-centerRelativeY);
     double fi2 = getFi(x-currentX-centerRelativeX,y-currentY-centerRelativeY);

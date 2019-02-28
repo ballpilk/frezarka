@@ -67,7 +67,7 @@ public:
       buff.append('\0');
       processCommand(buff);
       buff.reset();
-      Serial.write(">\n");
+      Serial.write("\n>\n");
     }
   }
 private:
