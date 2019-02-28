@@ -84,7 +84,7 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
       fi1 +=2*M_PI;
     double arcAngle = fi1-fi2;
     double arclength = arcAngle*radius;
-    unsigned int sections = arclength/20;//20 steps = ~0,016mm
+    unsigned int sections = abs(arclength/20);//20 steps = ~0,016mm
     double sectionAngle = arcAngle/sections;
     double dz = z-currentZ;
     long unsigned int startZ = currentZ;
@@ -113,7 +113,7 @@ MotorCoordinator(MotorDriver& x1, MotorDriver& x2, MotorDriver& y,  MotorDriver&
       fi2 +=2*M_PI;
     double arcAngle = fi2-fi1;
     double arclength = arcAngle*radius;
-    int sections = arclength/20;//20 steps = ~0,1mm
+    unsigned int sections = abs(arclength/20);//20 steps = ~0,1mm
     double sectionAngle = arcAngle/double(sections);
     double dz = z-currentZ;
     long unsigned int startZ = currentZ;

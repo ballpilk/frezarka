@@ -28,32 +28,32 @@ public:
   {}
   void processCommand(const SerialBuffer& buff)
   {
-    int commandNumber = getNumber(buff, 'G');
+    int commandNumber = getNumber( 'G');
     switch(commandNumber)
     {
         case 1: //line
         {
-          coordinator.line(getNumber(buff, 'X')*stepsPerMM, getNumber(buff, 'Y')*stepsPerMM, getNumber(buff, 'Z')*stepsPerMM, getNumber(buff, 'F')*stepsPerMM);
+          coordinator.line(getNumber('X')*stepsPerMM, getNumber('Y')*stepsPerMM, getNumber('Z')*stepsPerMM, getNumber('F')*stepsPerMM);
           break;
         }
         case 3: //arc right
         {
-          coordinator.archR(getNumber(buff, 'X')*stepsPerMM,
-                          getNumber(buff, 'Y')*stepsPerMM,
-                          getNumber(buff, 'Z')*stepsPerMM,
-                          getNumber(buff, 'I')*stepsPerMM,
-                          getNumber(buff, 'J')*stepsPerMM,
-                          getNumber(buff, 'F')*stepsPerMM/10);
+          coordinator.archR(getNumber('X')*stepsPerMM,
+                          getNumber('Y')*stepsPerMM,
+                          getNumber('Z')*stepsPerMM,
+                          getNumber('I')*stepsPerMM,
+                          getNumber('J')*stepsPerMM,
+                          getNumber('F')*stepsPerMM/10);
           break;
         }
         case 4: //arc left
         {
-          coordinator.archL(getNumber(buff, 'X')*stepsPerMM,
-                          getNumber(buff, 'Y')*stepsPerMM,
-                          getNumber(buff, 'Z')*stepsPerMM,
-                          getNumber(buff, 'I')*stepsPerMM,
-                          getNumber(buff, 'J')*stepsPerMM,
-                          getNumber(buff, 'F')*stepsPerMM/10);
+          coordinator.archL(getNumber('X')*stepsPerMM,
+                          getNumber('Y')*stepsPerMM,
+                          getNumber('Z')*stepsPerMM,
+                          getNumber('I')*stepsPerMM,
+                          getNumber('J')*stepsPerMM,
+                          getNumber('F')*stepsPerMM/10);
           break;
         }
     }
@@ -72,7 +72,7 @@ public:
   }
 private:
   const unsigned int stepsPerMM = 1600;
-  double getNumber(const SerialBuffer& buff, char code)
+  double getNumber(char code)
   {
     for(int i=0; i < buff.pos;++i)
     {
